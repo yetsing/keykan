@@ -9,6 +9,9 @@ from sharelib import (
     SDL_EVENT_QUIT,
     SDL_INIT_VIDEO,
     SDL_BUTTON_RIGHT,
+SDL_HITTEST_DRAGGABLE,
+SDL_HITTEST_NORMAL,
+SDL_HitTest,
     SDL_WINDOW_ALWAYS_ON_TOP,
     SDL_WINDOW_BORDERLESS,
     SDL_WINDOW_RESIZABLE,
@@ -22,6 +25,20 @@ from sharelib import (
 
 script_dir = pathlib.Path(__file__).parent.resolve()
 
+
+def hit_test_impl(win, area_ptr, data):
+    # Extract point coordinates
+    area = area_ptr.contents
+
+    # Define draggable region (top 30 pixels)
+    if area.y < 30:
+        return SDL_HITTEST_DRAGGABLE
+    return SDL_HITTEST_NORMAL
+
+
+# Wrap Python function in ctypes callback
+callback = SDL_HitTest(hit_test_impl)
+callback_ref = callback  # Prevent garbage collection
 
 class KeyDisplayWindow:
 
@@ -54,13 +71,13 @@ class KeyDisplayWindow:
 
     def _run(self):
         title = "Hello SDL".encode("utf-8")  # must be bytes
-        width = 500
+        width = 840
         height = 50
         flags = (
             SDL_WINDOW_RESIZABLE
             | SDL_WINDOW_TRANSPARENT
             | SDL_WINDOW_ALWAYS_ON_TOP
-            | SDL_WINDOW_BORDERLESS
+            # | SDL_WINDOW_BORDERLESS
         )
 
         self.window = sdl3.SDL_CreateWindow(title, width, height, flags)
@@ -70,7 +87,11 @@ class KeyDisplayWindow:
             )
             raise RuntimeError("Window creation failed")
 
-        self.renderer = sdl3.SDL_CreateRenderer(self.window, None)
+        # if not sdl3.SDL_SetWindowHitTest(self.window, callback, None):
+        #     print(f"SDL_SetWindowHitTest failed! SDL_Error: {sdl3.SDL_GetError().decode('utf-8')}")
+        #     raise RuntimeError("SDL_SetWindowHitTest failed")
+
+        self.renderer = sdl3.SDL_CreateRenderer(self.window, ctypes.c_char_p(0))
         if not self.renderer:
             print(
                 f"Renderer could not be created! SDL_Error: {sdl3.SDL_GetError().decode('utf-8')}"
@@ -85,8 +106,6 @@ class KeyDisplayWindow:
             event = SDL_Event()
             while sdl3.SDL_PollEvent(ctypes.byref(event)):
                 if event.type == SDL_EVENT_QUIT:
-                    running = False
-                elif event.type == SDL_EVENT_MOUSE_BUTTON_DOWN and event.button.button == SDL_BUTTON_RIGHT:
                     running = False
 
             text = "Press any key...".encode("utf-8")
@@ -132,6 +151,7 @@ class KeyDisplayWindow:
 
 
 class KeyListener:
+    char_a = ord('a')
     def __init__(self, window: KeyDisplayWindow):
         self.window = window
         self.listener = keyboard.Listener(on_press=self.on_press)
@@ -143,11 +163,14 @@ class KeyListener:
             # 处理普通按键
             if hasattr(key, "char") and key.char:
                 key_str = key.char
+                if len(key_str) == 1 and not key_str[0].isprintable():
+                    key_str = chr(self.char_a + ord(key_str[0]) - 1)
             # 处理特殊按键
             else:
                 key_str = key.name.replace("_", " ").title()
+                key_str = f"[{key_str}]"
         except AttributeError:
-            key_str = str(key)
+            key_str = chr(key.vk)
 
         self.window.add_key(key_str)
 

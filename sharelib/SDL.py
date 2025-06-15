@@ -5,6 +5,7 @@ from .SDL_events import *
 from .SDL_mouse import *
 from .SDL_pixels import *
 from .SDL_rect import *
+from .SDL_video import *
 
 # region SDL constants
 
@@ -58,12 +59,28 @@ SDL_WINDOW_NOT_FOCUSABLE = (
 
 # region Define argument and return types
 
+# typedef SDL_HitTestResult (SDLCALL *SDL_HitTest)(SDL_Window *win, const SDL_Point *area, void *data);
+SDL_HitTest = ctypes.CFUNCTYPE(
+    ctypes.c_int,  # Return type (SDL_HitTestResult)
+    ctypes.c_void_p,  # Window pointer
+    ctypes.POINTER(SDL_Point),  # Mouse position pointer
+    ctypes.c_void_p,  # User data
+)
+
 # bool SDL_SetWindowOpacity(SDL_Window *window, float opacity);
 sdl3.SDL_SetWindowOpacity.argtypes = [
     ctypes.c_void_p,  # SDL_Window* window
     ctypes.c_float,  # float opacity
 ]
-sdl3.SDL_SetWindowOpacity.restype = ctypes.c_bool  # Returns bool (SDL_TRUE or SDL_FALSE)
+sdl3.SDL_SetWindowOpacity.restype = ctypes.c_bool
+
+# bool SDL_SetWindowHitTest(SDL_Window *window, SDL_HitTest callback, void *callback_data);
+sdl3.SDL_SetWindowHitTest.argtypes = [
+    ctypes.c_void_p,
+    SDL_HitTest,
+    ctypes.c_void_p,
+]
+sdl3.SDL_SetWindowHitTest.restype = ctypes.c_bool
 
 # bool SDL_Init(SDL_InitFlags flags);
 sdl3.SDL_Init.argtypes = [ctypes.c_uint32]  # SDL_InitFlags (usually a uint32_t)
@@ -112,6 +129,10 @@ sdl3.SDL_SetRenderDrawColor.restype = (
 # bool SDL_RenderPresent(SDL_Renderer *renderer);
 sdl3.SDL_RenderPresent.argtypes = [ctypes.c_void_p]  # SDL_Renderer* renderer
 sdl3.SDL_RenderPresent.restype = ctypes.c_bool  # Returns bool (SDL_TRUE or SDL_FALSE)
+
+# bool SDL_RenderClear(SDL_Renderer *renderer);
+sdl3.SDL_RenderClear.argtypes = [ctypes.c_void_p]
+sdl3.SDL_RenderClear.restype = ctypes.c_bool
 
 # bool SDL_RenderTexture(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_FRect *srcrect, const SDL_FRect *dstrect);
 sdl3.SDL_RenderTexture.argtypes = [

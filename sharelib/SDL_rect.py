@@ -1,6 +1,13 @@
 import ctypes
 
 
+class SDL_Point(ctypes.Structure):
+    _fields_ = [
+        ("x", ctypes.c_int),
+        ("y", ctypes.c_int),
+    ]
+
+
 class SDL_Rect(ctypes.Structure):
     _fields_ = [
         ("x", ctypes.c_int),  # x coordinate of the rectangle

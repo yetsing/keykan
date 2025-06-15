@@ -4,8 +4,10 @@ import os
 import pathlib
 import shutil
 import subprocess
+import platform
 
 script_dir = pathlib.Path(__file__).parent.resolve()
+dlls_dir = script_dir / "dlls"
 
 
 def check_env():
@@ -23,7 +25,7 @@ def build_sdl():
         os.chdir(script_dir / "SDL")
         subprocess.check_call([cmake, "-S", ".", "-B", "build"])
         subprocess.check_call([cmake, "--build", "build"])
-        shutil.copyfile(pathlib.Path("build") / libname, script_dir / libname)
+        shutil.copyfile(pathlib.Path("build") / libname, dlls_dir / libname)
     finally:
         os.chdir(curdir)
 
@@ -46,12 +48,14 @@ def build_sdl_ttf():
             ]
         )
         subprocess.check_call([cmake, "--build", "build"])
-        shutil.copyfile(pathlib.Path("build") / libname, script_dir / libname)
+        shutil.copyfile(pathlib.Path("build") / libname, dlls_dir / libname)
     finally:
         os.chdir(curdir)
 
 
 def main():
+    if platform.system() == "Windows":
+        raise EnvironmentError("Windows is not supported")
     check_env()
     build_sdl()
     build_sdl_ttf()

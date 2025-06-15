@@ -11,27 +11,22 @@ SDL_EVENT_MOUSE_ADDED = 0x404  # /**< A new mouse has been inserted into the sys
 SDL_EVENT_MOUSE_REMOVED = 0x405  # /**< A mouse has been removed */
 
 
-# typedef struct SDL_MouseButtonEvent
-# {
-#     SDL_EventType type; /**< SDL_EVENT_MOUSE_BUTTON_DOWN or SDL_EVENT_MOUSE_BUTTON_UP */
-#     Uint32 reserved;
-#     Uint64 timestamp;   /**< In nanoseconds, populated using SDL_GetTicksNS() */
-#     SDL_WindowID windowID; /**< The window with mouse focus, if any */
-#     SDL_MouseID which;  /**< The mouse instance id in relative mode, SDL_TOUCH_MOUSEID for touch events, or 0 */
-#     Uint8 button;       /**< The mouse button index */
-#     bool down;          /**< true if the button is pressed */
-#     Uint8 clicks;       /**< 1 for single-click, 2 for double-click, etc. */
-#     Uint8 padding;
-#     float x;            /**< X coordinate, relative to window */
-#     float y;            /**< Y coordinate, relative to window */
-# } SDL_MouseButtonEvent;
 class SDL_MouseButtonEvent(ctypes.Structure):
     _fields_ = [
-        ("type", ctypes.c_int),  # SDL_EVENT_MOUSE_BUTTON_DOWN or SDL_EVENT_MOUSE_BUTTON_UP
+        (
+            "type",
+            ctypes.c_int,
+        ),  # SDL_EVENT_MOUSE_BUTTON_DOWN or SDL_EVENT_MOUSE_BUTTON_UP
         ("reserved", ctypes.c_uint32),
-        ("timestamp", ctypes.c_uint64),  # In nanoseconds, populated using SDL_GetTicksNS()
+        (
+            "timestamp",
+            ctypes.c_uint64,
+        ),  # In nanoseconds, populated using SDL_GetTicksNS()
         ("windowID", ctypes.c_uint32),  # The window with mouse focus, if any
-        ("which", ctypes.c_uint32),  # The mouse instance id in relative mode, SDL_TOUCH_MOUSEID for touch events, or 0
+        (
+            "which",
+            ctypes.c_uint32,
+        ),  # The mouse instance id in relative mode, SDL_TOUCH_MOUSEID for touch events, or 0
         ("button", ctypes.c_uint8),  # The mouse button index
         ("down", ctypes.c_bool),  # true if the button is pressed
         ("clicks", ctypes.c_uint8),  # 1 for single-click, 2 for double-click, etc.
@@ -39,6 +34,7 @@ class SDL_MouseButtonEvent(ctypes.Structure):
         ("x", ctypes.c_float),  # X coordinate, relative to window
         ("y", ctypes.c_float),  # Y coordinate, relative to window
     ]
+
 
 class SDL_Event(ctypes.Union):
     _fields_ = [

@@ -1,6 +1,6 @@
-[submodule "sdl3/SDL"]
-	path = sdl3/SDL
+[submodule "sharelib/SDL"]
+	path = sharelib/SDL
 	url = https://github.com/libsdl-org/SDL.git
-[submodule "sdl3/SDL_ttf"]
-	path = sdl3/SDL_ttf
+[submodule "sharelib/SDL_ttf"]
+	path = sharelib/SDL_ttf
 	url = https://github.com/libsdl-org/SDL_ttf.git
