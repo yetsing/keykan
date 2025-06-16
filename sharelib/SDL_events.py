@@ -2,6 +2,12 @@ import ctypes
 
 SDL_EVENT_QUIT = 0x100
 
+
+# /* Window events */
+SDL_EVENT_WINDOW_MOUSE_ENTER = 0x20C  # /**< Window has gained mouse focus */
+SDL_EVENT_WINDOW_MOUSE_LEAVE = 0x20D  # /**< Window has lost mouse focus */
+
+
 #  Mouse events
 SDL_EVENT_MOUSE_MOTION = 0x400  # /**< Mouse moved */
 SDL_EVENT_MOUSE_BUTTON_DOWN = 0x401  # /**< Mouse button pressed */

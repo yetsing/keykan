@@ -6,10 +6,10 @@ from collections import deque
 from pynput import keyboard
 
 from sharelib import (
-    SDL_EVENT_MOUSE_BUTTON_DOWN,
     SDL_EVENT_QUIT,
+    SDL_EVENT_WINDOW_MOUSE_ENTER,
+    SDL_EVENT_WINDOW_MOUSE_LEAVE,
     SDL_INIT_VIDEO,
-    SDL_BUTTON_RIGHT,
     SDL_HITTEST_DRAGGABLE,
     SDL_HITTEST_NORMAL,
     SDL_HitTest,
@@ -89,10 +89,6 @@ class KeyDisplayWindow:
             )
             raise RuntimeError("Window creation failed")
 
-        # if not sdl3.SDL_SetWindowHitTest(self.window, callback, None):
-        #     print(f"SDL_SetWindowHitTest failed! SDL_Error: {sdl3.SDL_GetError().decode('utf-8')}")
-        #     raise RuntimeError("SDL_SetWindowHitTest failed")
-
         self.renderer = sdl3.SDL_CreateRenderer(self.window, ctypes.c_char_p(0))
         if not self.renderer:
             print(
@@ -104,12 +100,25 @@ class KeyDisplayWindow:
 
         running = True
         prev_text = b""
+        ts = time.monotonic_ns()
+        mouse_leaved = False
         while running:
             time.sleep(1 / 30)  # 30 FPS
             event = SDL_Event()
             while sdl3.SDL_PollEvent(ctypes.byref(event)):
                 if event.type == SDL_EVENT_QUIT:
                     running = False
+                elif event.type == SDL_EVENT_WINDOW_MOUSE_ENTER:
+                    sdl3.SDL_SetWindowBordered(self.window, True)
+                elif event.type == SDL_EVENT_WINDOW_MOUSE_LEAVE:
+                    # 移到标题栏也会触发这个事件，设置延时消失
+                    # 这样有机会点击到标题栏
+                    mouse_leaved = True
+                    ts = time.monotonic_ns() + 1e9
+
+            if mouse_leaved and time.monotonic_ns() > ts:
+                sdl3.SDL_SetWindowBordered(self.window, False)
+                mouse_leaved = False
 
             text = "Press any key...".encode("utf-8")
             if len(self.key_history) > 0:

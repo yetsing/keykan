@@ -59,6 +59,13 @@ SDL_WINDOW_NOT_FOCUSABLE = (
 
 # region Define argument and return types
 
+# bool SDL_SetWindowBordered(SDL_Window *window, bool bordered);
+sdl3.SDL_SetWindowBordered.argtypes = [
+    ctypes.c_void_p,
+    ctypes.c_bool,
+]
+sdl3.SDL_SetWindowBordered.restype = ctypes.c_bool
+
 # typedef SDL_HitTestResult (SDLCALL *SDL_HitTest)(SDL_Window *win, const SDL_Point *area, void *data);
 SDL_HitTest = ctypes.CFUNCTYPE(
     ctypes.c_int,  # Return type (SDL_HitTestResult)
