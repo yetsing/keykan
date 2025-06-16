@@ -15,5 +15,8 @@ if platform.system() == "Windows":
     os.add_dll_directory(r"C:\msys64\ucrt64\bin")
     sdl3_libname = "SDL3.dll"
     sdl3_ttf_libname = "SDL3_ttf.dll"
+elif platform.system() == "Darwin":
+    sdl3_libname = "libSDL3.0.dylib"
+    sdl3_ttf_libname = "libSDL3_ttf.0.dylib"
 sdl3 = ctypes.CDLL(str(dlls_dir / sdl3_libname))
 sdl3_ttf = ctypes.CDLL(str(dlls_dir / sdl3_ttf_libname))

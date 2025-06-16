@@ -21,8 +21,12 @@ def build_sdl():
     assert cmake is not None, "CMake must be installed to build SDL."
     curdir = os.getcwd()
     libname = "libSDL3.so.0"
+    if platform.system() == "Darwin":
+        libname = "libSDL3.0.dylib"
     try:
         os.chdir(script_dir / "SDL")
+        if pathlib.Path("build").exists():
+            shutil.rmtree("build")
         subprocess.check_call([cmake, "-S", ".", "-B", "build"])
         subprocess.check_call([cmake, "--build", "build"])
         shutil.copyfile(pathlib.Path("build") / libname, dlls_dir / libname)
@@ -35,8 +39,12 @@ def build_sdl_ttf():
     assert cmake is not None, "CMake must be installed to build SDL_ttf."
     curdir = os.getcwd()
     libname = "libSDL3_ttf.so.0"
+    if platform.system() == "Darwin":
+        libname = "libSDL3_ttf.0.dylib"
     try:
         os.chdir(script_dir / "SDL_ttf")
+        if pathlib.Path("build").exists():
+            shutil.rmtree("build")
         subprocess.check_call(
             [
                 cmake,

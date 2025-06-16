@@ -1,5 +1,6 @@
 import ctypes
 import pathlib
+import time
 from collections import deque
 
 from pynput import keyboard
@@ -9,9 +10,9 @@ from sharelib import (
     SDL_EVENT_QUIT,
     SDL_INIT_VIDEO,
     SDL_BUTTON_RIGHT,
-SDL_HITTEST_DRAGGABLE,
-SDL_HITTEST_NORMAL,
-SDL_HitTest,
+    SDL_HITTEST_DRAGGABLE,
+    SDL_HITTEST_NORMAL,
+    SDL_HitTest,
     SDL_WINDOW_ALWAYS_ON_TOP,
     SDL_WINDOW_BORDERLESS,
     SDL_WINDOW_RESIZABLE,
@@ -39,6 +40,7 @@ def hit_test_impl(win, area_ptr, data):
 # Wrap Python function in ctypes callback
 callback = SDL_HitTest(hit_test_impl)
 callback_ref = callback  # Prevent garbage collection
+
 
 class KeyDisplayWindow:
 
@@ -103,6 +105,7 @@ class KeyDisplayWindow:
         running = True
         prev_text = b""
         while running:
+            time.sleep(1 / 30)  # 30 FPS
             event = SDL_Event()
             while sdl3.SDL_PollEvent(ctypes.byref(event)):
                 if event.type == SDL_EVENT_QUIT:
@@ -151,7 +154,8 @@ class KeyDisplayWindow:
 
 
 class KeyListener:
-    char_a = ord('a')
+    char_a = ord("a")
+
     def __init__(self, window: KeyDisplayWindow):
         self.window = window
         self.listener = keyboard.Listener(on_press=self.on_press)
