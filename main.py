@@ -72,7 +72,7 @@ class KeyDisplayWindow:
             raise RuntimeError("Font loading failed")
 
     def _run(self):
-        title = "Hello SDL".encode("utf-8")  # must be bytes
+        title = "KeyKan".encode("utf-8")  # must be bytes
         width = 840
         height = 50
         flags = (
