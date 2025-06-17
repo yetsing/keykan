@@ -73,7 +73,7 @@ class KeyDisplayWindow:
 
     def _run(self):
         title = "KeyKan".encode("utf-8")  # must be bytes
-        width = 840
+        width = 400
         height = 50
         flags = (
             SDL_WINDOW_RESIZABLE
@@ -100,25 +100,12 @@ class KeyDisplayWindow:
 
         running = True
         prev_text = b""
-        ts = time.monotonic_ns()
-        mouse_leaved = False
         while running:
             time.sleep(1 / 30)  # 30 FPS
             event = SDL_Event()
             while sdl3.SDL_PollEvent(ctypes.byref(event)):
                 if event.type == SDL_EVENT_QUIT:
                     running = False
-                elif event.type == SDL_EVENT_WINDOW_MOUSE_ENTER:
-                    sdl3.SDL_SetWindowBordered(self.window, True)
-                elif event.type == SDL_EVENT_WINDOW_MOUSE_LEAVE:
-                    # 移到标题栏也会触发这个事件，设置延时消失
-                    # 这样有机会点击到标题栏
-                    mouse_leaved = True
-                    ts = time.monotonic_ns() + 1e9
-
-            if mouse_leaved and time.monotonic_ns() > ts:
-                sdl3.SDL_SetWindowBordered(self.window, False)
-                mouse_leaved = False
 
             text = "Press any key...".encode("utf-8")
             if len(self.key_history) > 0:
@@ -134,7 +121,7 @@ class KeyDisplayWindow:
 
             # Clear, copy, and present
             sdl3.SDL_RenderClear(self.renderer)
-            dst_rect = SDL_FRect(0, 0, w.value, h.value)
+            dst_rect = SDL_FRect(width - w.value, 0, w.value, h.value)
             sdl3.SDL_RenderTexture(self.renderer, texture, None, ctypes.byref(dst_rect))
             sdl3.SDL_RenderPresent(self.renderer)
 
