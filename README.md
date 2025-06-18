@@ -27,7 +27,7 @@ uv run sharelib/build_lib.py
 ### MacOS
 
 ```shell
-brew install
+brew install freetype harfbuzz
 uv run sharelib/build_lib.py
 ```
 
