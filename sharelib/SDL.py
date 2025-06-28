@@ -1,11 +1,11 @@
 import ctypes
 
 from .lib import sdl3
-from .SDL_events import *
-from .SDL_mouse import *
-from .SDL_pixels import *
-from .SDL_rect import *
-from .SDL_video import *
+from .SDL_events import *  # noqa
+from .SDL_mouse import *  # noqa
+from .SDL_pixels import *  # noqa
+from .SDL_rect import *  # noqa
+from .SDL_video import *  # noqa
 
 # region SDL constants
 
@@ -58,6 +58,10 @@ SDL_WINDOW_NOT_FOCUSABLE = (
 # endregion
 
 # region Define argument and return types
+
+# void SDL_SetMainReady(void);
+sdl3.SDL_SetMainReady.argtypes = []
+sdl3.SDL_SetMainReady.restype = None
 
 # bool SDL_SetWindowBordered(SDL_Window *window, bool bordered);
 sdl3.SDL_SetWindowBordered.argtypes = [

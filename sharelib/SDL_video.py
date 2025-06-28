@@ -1,3 +1,7 @@
+import ctypes
+
+from .lib import sdl3
+
 SDL_HITTEST_NORMAL = 0  # /**< Region is normal. No special properties. */
 SDL_HITTEST_DRAGGABLE = 1  # /**< Region can drag entire window. */
 SDL_HITTEST_RESIZE_TOPLEFT = (
@@ -16,3 +20,10 @@ SDL_HITTEST_RESIZE_BOTTOMLEFT = (
     8  # /**< Region is the resizable bottom-left corner border. */
 )
 SDL_HITTEST_RESIZE_LEFT = 9  # /**< Region is the resizable left border. */
+
+sdl3.SDL_GetWindowPosition.argtypes = [
+    ctypes.c_void_p,
+    ctypes.POINTER(ctypes.c_int),
+    ctypes.POINTER(ctypes.c_int),
+]
+sdl3.SDL_GetWindowPosition.restype = ctypes.c_bool

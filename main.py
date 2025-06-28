@@ -6,13 +6,11 @@ from collections import deque
 from pynput import keyboard
 
 from sharelib import (
+    SDL_BUTTON_RIGHT,
     SDL_EVENT_QUIT,
     SDL_EVENT_WINDOW_MOUSE_ENTER,
     SDL_EVENT_WINDOW_MOUSE_LEAVE,
     SDL_INIT_VIDEO,
-    SDL_HITTEST_DRAGGABLE,
-    SDL_HITTEST_NORMAL,
-    SDL_HitTest,
     SDL_WINDOW_ALWAYS_ON_TOP,
     SDL_WINDOW_BORDERLESS,
     SDL_WINDOW_RESIZABLE,
@@ -27,21 +25,6 @@ from sharelib import (
 script_dir = pathlib.Path(__file__).parent.resolve()
 
 
-def hit_test_impl(win, area_ptr, data):
-    # Extract point coordinates
-    area = area_ptr.contents
-
-    # Define draggable region (top 30 pixels)
-    if area.y < 30:
-        return SDL_HITTEST_DRAGGABLE
-    return SDL_HITTEST_NORMAL
-
-
-# Wrap Python function in ctypes callback
-callback = SDL_HitTest(hit_test_impl)
-callback_ref = callback  # Prevent garbage collection
-
-
 class KeyDisplayWindow:
 
     def __init__(self):
@@ -49,7 +32,11 @@ class KeyDisplayWindow:
         self.renderer = None
         self.font = None
         self.running = True
+
         self.key_history = deque(maxlen=5)  # 存储最近个按键
+        self.key_added = False
+
+        sdl3.SDL_SetMainReady()
 
         if not sdl3.SDL_Init(SDL_INIT_VIDEO):
             print(
@@ -79,7 +66,7 @@ class KeyDisplayWindow:
             SDL_WINDOW_RESIZABLE
             | SDL_WINDOW_TRANSPARENT
             | SDL_WINDOW_ALWAYS_ON_TOP
-            # | SDL_WINDOW_BORDERLESS
+            | SDL_WINDOW_BORDERLESS
         )
 
         self.window = sdl3.SDL_CreateWindow(title, width, height, flags)
@@ -100,14 +87,31 @@ class KeyDisplayWindow:
 
         running = True
         prev_text = b""
+        text = b"Press any key..."
+        bordered = False
+        window_leaved = True
         while running:
             time.sleep(1 / 30)  # 30 FPS
             event = SDL_Event()
             while sdl3.SDL_PollEvent(ctypes.byref(event)):
+                window_x = ctypes.c_int()
+                window_y = ctypes.c_int()
+                sdl3.SDL_GetWindowPosition(
+                    self.window, ctypes.byref(window_x), ctypes.byref(window_y)
+                )
                 if event.type == SDL_EVENT_QUIT:
                     running = False
+                elif event.type == SDL_EVENT_WINDOW_MOUSE_ENTER and not bordered:
+                    window_leaved = False
+                    bordered = sdl3.SDL_SetWindowBordered(self.window, True)
+                elif event.type == SDL_EVENT_WINDOW_MOUSE_LEAVE:
+                    window_leaved = True
+                    self.key_added = False
 
-            text = "Press any key...".encode("utf-8")
+            if window_leaved and self.key_added and bordered:
+                # 鼠标离开窗口后，如果有按键添加，移除窗口边框
+                bordered = not sdl3.SDL_SetWindowBordered(self.window, False)
+
             if len(self.key_history) > 0:
                 text = " ".join(self.key_history).encode("utf-8")
             if text == prev_text:
@@ -146,6 +150,7 @@ class KeyDisplayWindow:
             self._free()
 
     def add_key(self, key: str):
+        self.key_added = True
         self.key_history.append(key)
 
 
